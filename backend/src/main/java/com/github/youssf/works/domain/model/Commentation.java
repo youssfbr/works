@@ -1,33 +1,37 @@
 package com.github.youssf.works.domain.model;
 
 import java.io.Serializable;
+import java.time.OffsetDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "tb_client")
-public class Client implements Serializable {	
+@Table(name = "tb_commentation")
+public class Commentation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String name;
-	private String email;
-	private String telephone;
 	
-	public Client() {	
+	@ManyToOne	
+	private Order order;
+	
+	private String description;
+	private OffsetDateTime date;	
+	
+	public Commentation() {	
 	}
 
-	public Client(Long id, String name, String email, String telephone) {	
+	public Commentation(Long id, String description, OffsetDateTime date) {	
 		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.telephone = telephone;
+		this.description = description;
+		this.date = date;
 	}
 
 	public Long getId() {
@@ -36,30 +40,30 @@ public class Client implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}	
+
+	public Order getOrder() {
+		return order;
 	}
 
-	public String getName() {
-		return name;
+	public void setOrder(Order order) {
+		this.order = order;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String getDescription() {
+		return description;
 	}
 
-	public String getEmail() {
-		return email;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public OffsetDateTime getDate() {
+		return date;
 	}
 
-	public String getTelephone() {
-		return telephone;
-	}
-
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
+	public void setDate(OffsetDateTime date) {
+		this.date = date;
 	}
 
 	@Override
@@ -78,7 +82,7 @@ public class Client implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Client other = (Client) obj;
+		Commentation other = (Commentation) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
