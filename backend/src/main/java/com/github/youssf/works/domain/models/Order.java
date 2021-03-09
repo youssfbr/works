@@ -1,4 +1,4 @@
-package com.github.youssf.works.domain.model;
+package com.github.youssf.works.domain.models;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
