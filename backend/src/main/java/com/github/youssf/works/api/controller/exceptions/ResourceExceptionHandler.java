@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,13 @@ import com.github.youssf.works.domain.services.exceptions.ResourceNotFoundExcept
 
 @ControllerAdvice
 public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
+	
+	private MessageSource messageSource;
+	
+	@Autowired
+	public ResourceExceptionHandler(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<StandardError> entityNotFound(ResourceNotFoundException e, HttpServletRequest request) {
@@ -59,7 +69,7 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 		for (ObjectError error : ex.getBindingResult().getAllErrors()) {
 						
 			String field = ((FieldError) error).getField();			
-			String messageError = error.getDefaultMessage();
+			String messageError = messageSource.getMessage(error, LocaleContextHolder.getLocale());
 			
 			fieldsErrors.add(new ApiErrors(field, messageError));			
 		}

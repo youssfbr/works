@@ -24,7 +24,7 @@ public class Client implements Serializable {
 	
 	@Column(nullable = false)
 	@NotEmpty
-	@Size(max = 60)
+	@Size(min = 2, max = 60)
 	private String name;
 	
 	@Column(nullable = false)
