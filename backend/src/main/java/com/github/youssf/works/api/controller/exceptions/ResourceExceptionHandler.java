@@ -22,6 +22,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.github.youssf.works.domain.services.exceptions.DatabaseException;
+import com.github.youssf.works.domain.services.exceptions.EmailExistsException;
 import com.github.youssf.works.domain.services.exceptions.ResourceNotFoundException;
 
 @ControllerAdvice
@@ -35,28 +36,30 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<StandardError> entityNotFound(ResourceNotFoundException e, HttpServletRequest request) {
+	public ResponseEntity<StandardError> entityNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
 		HttpStatus status = HttpStatus.NOT_FOUND;
 		
 		StandardError err = new StandardError();
 		err.setTimestamp(Instant.now());
 		err.setStatus(status.value());
-		err.setError("Resource not found!");
-		err.setMessage(e.getMessage());
+		err.setError("Recurso nao encontrado!");
+		err.setMessage(ex.getMessage());
 		err.setPath(request.getRequestURI());
+		
 		return ResponseEntity.status(status).body(err);
 	}
 	
 	@ExceptionHandler(DatabaseException.class)
-	public ResponseEntity<StandardError> database(DatabaseException e, HttpServletRequest request) {
+	public ResponseEntity<StandardError> database(DatabaseException ex, HttpServletRequest request) {
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		
 		StandardError err = new StandardError();
 		err.setTimestamp(Instant.now());
 		err.setStatus(status.value());
-		err.setError("Database Exception!");
-		err.setMessage(e.getMessage());
+		err.setError("Violação de Integridade!");
+		err.setMessage(ex.getMessage());
 		err.setPath(request.getRequestURI());
+		
 		return ResponseEntity.status(status).body(err);
 	}	
 	
@@ -77,10 +80,24 @@ public class ResourceExceptionHandler extends ResponseEntityExceptionHandler {
 		StandardError err = new StandardError();
 		err.setTimestamp(Instant.now());
 		err.setStatus(status.value());
-		err.setError("One or more fields are invalid!");		
+		err.setError("Um ou mais campos são inválidos! Preencha os campos corretamente e tente novamente!");		
 		err.setPath(((ServletWebRequest)request).getRequest().getRequestURI().toString());		
 		err.setErrors(fieldsErrors);
 	
 		return super.handleExceptionInternal(ex, err, headers, status, request);
+	}
+	
+	@ExceptionHandler(EmailExistsException.class)
+	public ResponseEntity<StandardError> emailExistsException(EmailExistsException ex, HttpServletRequest request) {
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		
+		StandardError err = new StandardError();
+		err.setTimestamp(Instant.now());
+		err.setStatus(status.value());
+		err.setError("Email já existe!");
+		err.setMessage(ex.getMessage());
+		err.setPath(request.getRequestURI());
+		
+		return ResponseEntity.status(status).body(err);
 	}
 }

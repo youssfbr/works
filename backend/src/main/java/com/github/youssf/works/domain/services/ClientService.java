@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.youssf.works.domain.models.Client;
 import com.github.youssf.works.domain.repositories.ClientRepository;
 import com.github.youssf.works.domain.services.exceptions.DatabaseException;
+import com.github.youssf.works.domain.services.exceptions.EmailExistsException;
 import com.github.youssf.works.domain.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -31,22 +32,35 @@ public class ClientService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Client> findByNameContaining(String name) {
-		return repository.findByNameContaining(name);
-	}
+	public List<Client> findByNameContaining(String name) {		
+		
+	List<Client> clientsLike = repository.findByNameContaining(name);
+		
+		if (clientsLike.isEmpty()) {
+			throw new ResourceNotFoundException("Nada consta!");
+		}
+		
+		return clientsLike;
+	}	
 
 	@Transactional(readOnly = true)
 	public Client findById(Long id) {
-		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id " + id + " not found!"));
+		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id " + id + " não encontrado!"));
 	}
 
 	@Transactional
 	public Client insert(Client client) {
+		
+		checkEmail(client);		
+				
 		return repository.save(client);
 	}
 
 	@Transactional
 	public Client update(Long id, Client client) {
+		
+		checkEmail(client);
+		
 		try {
 			Client entity = repository.getOne(id);
 			entity.setName(client.getName());
@@ -55,7 +69,7 @@ public class ClientService {
 			return repository.save(entity);
 		} 
 		catch (EntityNotFoundException e) {
-			throw new ResourceNotFoundException("Id " + id + " not found!");
+			throw new ResourceNotFoundException("Id " + id + " não encontrado!");
 		}
 	}
 
@@ -64,10 +78,22 @@ public class ClientService {
 			repository.deleteById(id);
 		} 
 		catch (EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException("Id " + id + " not found!");
+			throw new ResourceNotFoundException("Id " + id + " não encontrado!");
 		} 
 		catch (DataIntegrityViolationException e) {
-			throw new DatabaseException("Integrity Violation!");
+			throw new DatabaseException("Um recurso está associado a outro recurso! Não é possível deletar!");
 		}
+	}
+	
+	private Client checkEmail(Client client) {
+		
+		Client clientExists = repository.findByEmail(client.getEmail());
+		
+		if (clientExists != null && !clientExists.equals(client)) {
+			throw new EmailExistsException("Já existe um cliente cadastrado com este e-mail: " 
+					+ client.getEmail() + " . Cadastre com outro email!");
+		}		
+
+		return clientExists;		
 	}
 }
