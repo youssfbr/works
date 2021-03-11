@@ -3,6 +3,8 @@ package com.github.youssf.works.api.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +47,7 @@ public class ClientController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Client> insert(@RequestBody Client client) {
+	public ResponseEntity<Client> insert(@Valid @RequestBody Client client) {
 		client = service.insert(client);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -55,7 +57,7 @@ public class ClientController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Client> update(@PathVariable Long id, @RequestBody Client client) {		
+	public ResponseEntity<Client> update(@PathVariable Long id, @Valid @RequestBody Client client) {		
 		return ResponseEntity.ok(service.update(id, client));
 	}
 	

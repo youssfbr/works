@@ -2,7 +2,12 @@ package com.github.youssf.works.api.controller.exceptions;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class StandardError implements Serializable {	
 	private static final long serialVersionUID = 1L;
 	
@@ -11,9 +16,8 @@ public class StandardError implements Serializable {
 	private String error;
 	private String message;
 	private String path;
-
-	public StandardError() {	
-	}
+	
+	private List<ApiErrors> errors;	
 
 	public Instant getTimestamp() {
 		return timestamp;
@@ -55,6 +59,11 @@ public class StandardError implements Serializable {
 		this.path = path;
 	} 
 	
+	public List<ApiErrors> getErrors() {
+		return errors;
+	}	
 	
-	
+	public void setErrors(List<ApiErrors> errors) {
+		this.errors = errors;
+	}	
 }

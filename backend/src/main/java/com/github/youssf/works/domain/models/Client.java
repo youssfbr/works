@@ -2,11 +2,16 @@ package com.github.youssf.works.domain.models;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "tb_client")
@@ -17,8 +22,20 @@ public class Client implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Column(nullable = false)
+	@NotEmpty
+	@Size(max = 60)
 	private String name;
+	
+	@Column(nullable = false)
+	@NotBlank
+	@Email
+	@Size(max = 255)
 	private String email;
+	
+	@Column(nullable = false)
+	@NotBlank
+	@Size(max = 20)
 	private String telephone;
 	
 	public Client() {	
